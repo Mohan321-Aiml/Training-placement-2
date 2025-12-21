@@ -1,0 +1,44 @@
+class Solution {
+    public int numDecodings(String s) {
+        int MOD = 1_000_000_007;
+        int n = s.length();
+        if (n == 0) return 0;
+
+        long prev = 1; // dp[i-2], empty string
+        long curr = s.charAt(0) == '*' ? 9 : (s.charAt(0) == '0' ? 0 : 1); // dp[i-1]
+
+        for (int i = 1; i < n; i++) {
+            long temp = 0;
+
+            char c = s.charAt(i);
+            char p = s.charAt(i - 1);
+
+            // Single character
+            if (c == '*') {
+                temp += 9 * curr;
+            } else if (c != '0') {
+                temp += curr;
+            }
+
+            // Two characters
+            if (p == '1') {
+                if (c == '*') temp += 9 * prev;
+                else temp += prev;
+            } else if (p == '2') {
+                if (c == '*') temp += 6 * prev;
+                else if (c >= '0' && c <= '6') temp += prev;
+            } else if (p == '*') {
+                if (c == '*') temp += 15 * prev; // 11..19 + 21..26
+                else if (c >= '0' && c <= '6') temp += 2 * prev; // * can be 1 or 2
+                else temp += prev; // * can only be 1
+            }
+
+            temp %= MOD;
+            prev = curr;
+            curr = temp;
+        }
+
+        return (int) curr;
+    }
+}
+   
